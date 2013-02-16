@@ -65,8 +65,14 @@ Library
                        Aws.Ses.Commands,
                        Aws.Ses.Commands.SendRawEmail,
                        Aws.Ses.Core
+                       Aws.Ets
+                       Aws.Ets.Commands
+                       Aws.Ets.Commands.CreateJob
+                       Aws.Ets.Core
+                       Aws.Ets.Json.Types
 
   Build-depends:
+                       aeson                >= 0.6.1,
                        attempt              >= 0.3.1.1 && < 0.5,
                        base                 == 4.*,
                        base64-bytestring    == 1.0.*,
@@ -87,7 +93,10 @@ Library
                        monad-control        >= 0.3,
                        mtl                  == 2.*,
                        old-locale           == 1.*,
+                       QuickCheck           >= 2.5.1,
+                       regex-compat         >= 0.95,
                        resourcet            >= 0.3.3 && <0.5,
+                       safe                 >= 0.3.3,
                        text                 >= 0.11,
                        time                 >= 1.1.4   && < 1.5,
                        transformers         >= 0.2.2.0 && < 0.4,
@@ -111,6 +120,94 @@ Library
         ScopedTypeVariables,
         EmptyDataDecls,
         Rank2Types
+
+Test-Suite ets-json
+  type:          detailed-0.9
+  test-module:   Aws.Ets.Json.Test
+  Build-depends:
+                       Cabal                >= 1.9.2,
+                       QuickCheck           >= 2.5.1,
+                       aeson                >= 0.6.1,
+                       base                 == 4.*,
+                       containers           >= 0.4,
+                       regex-compat         >= 0.95,
+                       safe                 >= 0.3.3,
+                       text                 >= 0.11
+  Other-modules:
+                       Aws.Ets.Json.Types
+
+  GHC-Options: -Wall
+
+  Default-Language: Haskell2010
+  Default-Extensions:
+        RecordWildCards,
+        TypeFamilies,
+        MultiParamTypeClasses,
+        FlexibleContexts,
+        FlexibleInstances,
+        FunctionalDependencies,
+        DeriveFunctor,
+        DeriveDataTypeable,
+        OverloadedStrings,
+        TupleSections,
+        ScopedTypeVariables,
+        EmptyDataDecls,
+        Rank2Types
+
+
+Test-Suite ets-sign4
+  type:          detailed-0.9
+  test-module:   Aws.Ets.Sign4.Test
+  Build-depends:
+                       Cabal                >= 1.9.2,
+                       attempt              >= 0.3.1.1 && < 0.5,
+                       base                 == 4.*,
+                       base64-bytestring    == 1.0.*,
+                       blaze-builder        >= 0.2.1.4 && < 0.4,
+                       bytestring           >= 0.9     && < 0.11,
+                       bytestring-lexing    >= 0.4.0,
+                       case-insensitive     >= 0.2     && < 1.1,
+                       cereal               == 0.3.*,
+                       conduit              >= 0.5     && < 0.6,
+                       containers           >= 0.4,
+                       crypto-api           >= 0.9,
+                       cryptohash           >= 0.6     && < 0.9,
+                       directory            >= 1.0     && < 1.3,
+                       failure              >= 0.2.0.1 && < 0.3,
+                       filepath             >= 1.1     && < 1.4,
+                       http-conduit         >= 1.6     && < 1.9,
+                       http-types           >= 0.7     && < 0.9,
+                       mtl                  == 2.*,
+                       old-locale           == 1.*,
+                       safe                 >= 0.3.3,
+                       text                 >= 0.11,
+                       time                 >= 1.1.4   && < 1.5,
+                       transformers         >= 0.2.2.0 && < 0.4,
+                       utf8-string          == 0.3.*,
+                       xml-conduit          >= 1.0.1 && <1.1
+
+  Other-modules:
+                       Aws.Core
+                       Aws.Ets.Sign4
+
+  GHC-Options: -Wall
+
+  Default-Language: Haskell2010
+  Default-Extensions:
+        RecordWildCards,
+        TypeFamilies,
+        MultiParamTypeClasses,
+        FlexibleContexts,
+        FlexibleInstances,
+        FunctionalDependencies,
+        DeriveFunctor,
+        DeriveDataTypeable,
+        OverloadedStrings,
+        TupleSections,
+        ScopedTypeVariables,
+        EmptyDataDecls,
+        Rank2Types
+
 
 Executable GetObject
   Main-is: GetObject.hs

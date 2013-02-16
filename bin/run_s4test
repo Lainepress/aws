@@ -1,0 +1,19 @@
+#!/bin/bash
+
+x=""
+x="$x -XRecordWildCards         "
+x="$x -XTypeFamilies            "
+x="$x -XMultiParamTypeClasses   "
+x="$x -XFlexibleContexts        "
+x="$x -XFlexibleInstances       "
+x="$x -XFunctionalDependencies  "
+x="$x -XDataKinds               "
+x="$x -XKindSignatures          "
+x="$x -XDeriveFunctor           "
+x="$x -XDeriveDataTypeable      "
+x="$x -XOverloadedStrings       "
+x="$x -XTupleSections           "
+x="$x -XScopedTypeVariables     "
+
+
+exec runghc $x Aws.Ets.Sign4.Test "$@"
