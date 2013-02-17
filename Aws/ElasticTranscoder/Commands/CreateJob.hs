@@ -1,6 +1,4 @@
-{-# OPTIONS_GHC -XGeneralizedNewtypeDeriving #-}
-
-module Aws.Ets.Commands.CreateJob
+module Aws.ElasticTranscoder.Commands.CreateJob
     ( CreateJob(..)
     , CreateJobResponse(..)
     , createJob
@@ -9,7 +7,7 @@ module Aws.Ets.Commands.CreateJob
     ) where
 
 import           Aws.Core
-import           Aws.Ets.Core
+import           Aws.ElasticTranscoder.Core
 import           Control.Applicative
 import           Data.Aeson
 
@@ -84,7 +82,7 @@ instance ResponseConsumer CreateJob CreateJobResponse where
     responseConsumer _ mref = etsResponseConsumer mref $ \rsp ->
                                                     cnv <$> jsonConsumer rsp
           where
-            cnv (JobSpecId a b c d) = CreateJobResponse a b c d
+            cnv (JobSingle(JobSpecId a b c d)) = CreateJobResponse a b c d
 
 instance Transaction CreateJob CreateJobResponse
 

@@ -65,11 +65,11 @@ Library
                        Aws.Ses.Commands,
                        Aws.Ses.Commands.SendRawEmail,
                        Aws.Ses.Core
-                       Aws.Ets
-                       Aws.Ets.Commands
-                       Aws.Ets.Commands.CreateJob
-                       Aws.Ets.Core
-                       Aws.Ets.Json.Types
+                       Aws.ElasticTranscoder
+                       Aws.ElasticTranscoder.Commands
+                       Aws.ElasticTranscoder.Commands.CreateJob
+                       Aws.ElasticTranscoder.Core
+                       Aws.ElasticTranscoder.Json.Types
 
   Build-depends:
                        aeson                >= 0.6.1,
@@ -123,7 +123,7 @@ Library
 
 Test-Suite ets-json
   type:          detailed-0.9
-  test-module:   Aws.Ets.Json.Test
+  test-module:   Aws.ElasticTranscoder.Json.Test
   Build-depends:
                        Cabal                >= 1.9.2,
                        QuickCheck           >= 2.5.1,
@@ -134,7 +134,7 @@ Test-Suite ets-json
                        safe                 >= 0.3.3,
                        text                 >= 0.11
   Other-modules:
-                       Aws.Ets.Json.Types
+                       Aws.ElasticTranscoder.Json.Types
 
   GHC-Options: -Wall
 
@@ -157,7 +157,7 @@ Test-Suite ets-json
 
 Test-Suite ets-sign4
   type:          detailed-0.9
-  test-module:   Aws.Ets.Sign4.Test
+  test-module:   Aws.ElasticTranscoder.Sign4.Test
   Build-depends:
                        Cabal                >= 1.9.2,
                        attempt              >= 0.3.1.1 && < 0.5,
@@ -188,7 +188,7 @@ Test-Suite ets-sign4
 
   Other-modules:
                        Aws.Core
-                       Aws.Ets.Sign4
+                       Aws.ElasticTranscoder.Sign4
 
   GHC-Options: -Wall
 

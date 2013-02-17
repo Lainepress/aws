@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -XGeneralizedNewtypeDeriving #-}
 
-module Aws.Ets.Core
+module Aws.ElasticTranscoder.Core
     ( EtsQuery(..)
     , EtsConfiguration(..)
     , etsConfiguration
@@ -19,12 +19,12 @@ module Aws.Ets.Core
     , etsResponseConsumer
     , jsonConsumer
     , module Aws.Core
-    , module Aws.Ets.Json.Types
+    , module Aws.ElasticTranscoder.Json.Types
     ) where
 
 import           Aws.Core
-import           Aws.Ets.Json.Types
-import           Aws.Ets.Sign4
+import           Aws.ElasticTranscoder.Json.Types
+import           Aws.ElasticTranscoder.Sign4
 import qualified Control.Exception              as C
 import           Control.Monad
 import           Control.Applicative
@@ -234,23 +234,31 @@ etsResponseConsumer mrf inr rsp =
 ets_error_rc :: HTTPResponseConsumer a
 ets_error_rc rsp0 =
  do rsp <- HTTP.lbsResponse rsp0
-    C.monadThrow $ err rsp $ cnv $ HTTP.responseBody rsp
+    C.monadThrow $ err rsp $ HTTP.responseBody rsp
   where
     err rsp msg = 
-            EtsError
-                { etsStatusCode   = HTTP.responseStatus rsp
-                , etsErrorMessage = msg
-                }
+            case eitherDecode msg :: Either String EtsServiceError of
+              Left per -> 
+                EtsError
+                    { etsStatusCode   = HTTP.responseStatus rsp
+                    , etsErrorMessage = oops per msg
+                    }
+              Right ese -> 
+                EtsError
+                    { etsStatusCode   = HTTP.responseStatus rsp
+                    , etsErrorMessage = _ESE ese
+                    }
 
-    cnv = T.pack . LC.unpack
+    oops per msg =
+                T.pack $ printf "JSON parse error (%s): %s" per $ LC.unpack msg
 
 jsonConsumer :: FromJSON a => HTTPResponseConsumer a
 jsonConsumer rsp0 =
  do rsp <- HTTP.lbsResponse rsp0
-    maybe (C.monadThrow $ oops rsp) return $ decode $ HTTP.responseBody rsp 
+    either (C.monadThrow . oops rsp) return $ eitherDecode $ HTTP.responseBody rsp 
   where
-    oops rsp = 
+    oops rsp dgc = 
         EtsError
             { etsStatusCode   = HTTP.responseStatus rsp
-            , etsErrorMessage = "Failed to parse JSON response"
+            , etsErrorMessage = "Failed to parse JSON response: " `T.append` T.pack dgc
             }

@@ -1,12 +1,12 @@
 {-# LANGUAGE BangPatterns        #-}
 
-module Aws.Ets.Sign4.Test
+module Aws.ElasticTranscoder.Sign4.Test
     ( main
     , tests
     , testAll
     ) where
 
-import           Aws.Ets.Sign4
+import           Aws.ElasticTranscoder.Sign4
 import           Aws.Core
 import           System.Locale
 import           System.Environment

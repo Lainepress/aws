@@ -1,10 +1,10 @@
-module Aws.Ets.Json.Test
+module Aws.ElasticTranscoder.Json.Test
     ( tests
     , testAll
     , testAllVerbose
     ) where
 
-import           Aws.Ets.Json.Types
+import           Aws.ElasticTranscoder.Json.Types
 import           Text.Printf
 import           Data.Aeson
 import qualified Test.QuickCheck                as QC
@@ -44,7 +44,10 @@ simple_tests =
         [ ae (mk_aet "JobId"            :: AETest JobId          )
         , ae (mk_aet "PipelineId"       :: AETest PipelineId     )
         , ae (mk_aet "PresetId"         :: AETest PresetId       )
+        , ae (mk_aet "PageToken"        :: AETest PageToken      )
         , ae (mk_aet "JobSpec"          :: AETest JobSpec        )
+        , ae (mk_aet "JobSingle"        :: AETest JobSingle      )
+        , ae (mk_aet "JobList"          :: AETest JobList        )
         , ae (mk_aet "JobSpecId"        :: AETest JobSpecId      )
         , ae (mk_aet "JSInput"          :: AETest JSInput        )
         , ae (mk_aet "JSOutput"         :: AETest JSOutput       )

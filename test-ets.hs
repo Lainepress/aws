@@ -1,29 +1,79 @@
 import           Aws
-import           Aws.Ets
+import           Aws.ElasticTranscoder
 import qualified Aws.S3                             as S3
 import           Data.Conduit        (($$+-))
 import           Data.Conduit.Binary (sinkFile)
 import           Network.HTTP.Conduit
+import           Control.Monad.Trans
 
 
 data TestType
     = S3
-    | Ets
+    | EtsCJ
+    | EtsGJ
+    | EtsErr
+    | EtsDJ
+    | EtsLJS
+    | EtsLJP
     deriving (Show)
 
 
 main :: IO ()
 main =
-    case Ets of
-      S3  -> testS3
-      Ets -> testEts
+    case EtsErr of
+      S3     -> testS3
+      EtsCJ  -> testEtsCJ
+      EtsGJ  -> testEtsGJ
+      EtsErr -> testEtsErr
+      EtsDJ  -> testEtsDJ
+      EtsLJS -> testEtsLJS
+      EtsLJP -> testEtsLJP
 
 
-testEts :: IO ()
-testEts = 
+testEtsCJ :: IO ()
+testEtsCJ = 
  do cfg <- Aws.baseConfiguration
     rsp <- withManager $ \mgr -> Aws.pureAws cfg my_ets_cfg mgr $ 
                 createJob "Wildlife.wmv" "Wildlife-t.f4v" my_preset my_pipeline
+    print rsp
+
+testEtsGJ :: IO ()
+testEtsGJ = 
+ do cfg <- Aws.baseConfiguration
+    rsp <- withManager $ \mgr -> Aws.pureAws cfg my_ets_cfg mgr $ 
+                GetJob my_job
+    print rsp
+
+testEtsErr :: IO ()
+testEtsErr = 
+ do cfg <- Aws.baseConfiguration
+    rsp <- withManager $ \mgr -> Aws.pureAws cfg my_ets_cfg mgr $ 
+                GetJob my_ne_job
+    print rsp
+
+testEtsDJ :: IO ()
+testEtsDJ = 
+ do cfg <- Aws.baseConfiguration
+    withManager $ \mgr -> 
+     do cjr <- Aws.pureAws cfg my_ets_cfg mgr $
+            createJob "Wildlife.wmv" "Wildlife-t.f4v" my_preset my_pipeline
+        liftIO $ print cjr
+        djr <- Aws.pureAws cfg my_ets_cfg mgr $
+            DeleteJob $ cjrId cjr 
+        liftIO $ print djr
+
+testEtsLJS :: IO ()
+testEtsLJS = 
+ do cfg <- Aws.baseConfiguration
+    rsp <- withManager $ \mgr -> Aws.pureAws cfg my_ets_cfg mgr $ 
+                ListJobsByStatus STSComplete True TNNull
+    print rsp
+
+testEtsLJP :: IO ()
+testEtsLJP = 
+ do cfg <- Aws.baseConfiguration
+    rsp <- withManager $ \mgr -> Aws.pureAws cfg my_ets_cfg mgr $ 
+                ListJobsByPipeline my_pipeline True TNNull
     print rsp
 
 my_ets_cfg :: EtsConfiguration NormalQuery
@@ -34,6 +84,15 @@ my_preset = "1351620000000-000001"
 
 my_pipeline :: PipelineId
 my_pipeline = "1359460188157-258e48"
+
+my_job :: JobId
+my_job = "1359460493779-ca6f29"
+
+my_ne_job :: JobId
+my_ne_job = "1359460493779-badbad"
+
+my_disposable_job :: JobId
+my_disposable_job = "1361017186442-6bbecf"
 
 testS3 :: IO ()
 testS3 = 

@@ -1,5 +1,5 @@
 
-module Aws.Ets.Sign4
+module Aws.ElasticTranscoder.Sign4
     ( Sign4(..)
     , authz
     , stringToSign
@@ -153,28 +153,6 @@ iso8601 = formatTime defaultTimeLocale "%Y%m%dT%H%M%SZ"
 
 mere_date :: UTCTime -> String
 mere_date = formatTime defaultTimeLocale "%Y%m%d"
-
-
-
-
--- FIXME: clear this out
-
-{-
-    sth =   [ (,) "host"           etsEndpoint                           ] ++
-            [ (,) "date"         $ fmtRfc822Time dte                     ] ++
-            [ (,) "content-type"   ctp               | Just ctp <- [mct] ]
-
-    amh = []
-    
-    oth = []
-
-    dte = signatureTime
-
-    mct = case etsqMethod of
-            Post -> Just $ BC.pack "application/json; charset=UTF-8"
-            _    -> Nothing
--}
-
 
 build_lines :: [Bl.Builder] -> [Bl.Builder]
 build_lines = intersperse (Bl8.fromChar '\n')

@@ -1,11 +1,14 @@
 {-# OPTIONS_GHC -XGeneralizedNewtypeDeriving #-}
 
-module Aws.Ets.Json.Types
+module Aws.ElasticTranscoder.Json.Types
     ( S3Object
     , JobId(..)
     , PipelineId(..)
     , PresetId(..)
+    , PageToken(..)
     , JobSpec(..)
+    , JobSingle(..)
+    , JobList(..)
     , JobSpecId(..)
     , JSInput(..)
     , JSOutput(..)
@@ -16,9 +19,12 @@ module Aws.Ets.Json.Types
     , Container(..)
     , Rotate(..)
     , Status(..)
+    , status_t
     , AutoBool(..)
     , TextOrNull(..)
+    , SUCCESS(..)
     , EtsServiceError(..)
+    , bool_t
     ) where
 
 import           Control.Monad
@@ -92,6 +98,25 @@ instance QC.Arbitrary PresetId where
     arbitrary = PRID . T.pack <$> QC.arbitrary
 
 
+
+--
+-- | Page Tokens
+--
+
+newtype PageToken = PGTK { _PGTK :: T.Text }
+    deriving (Show,IsString,Eq)
+
+instance FromJSON PageToken where
+    parseJSON = withText "PageToken" $ return . PGTK
+
+instance ToJSON PageToken where
+    toJSON = String . _PGTK
+
+instance QC.Arbitrary PageToken where
+    arbitrary = PGTK . T.pack <$> QC.arbitrary
+
+
+
 --
 -- | Job Specifications
 --
@@ -125,6 +150,61 @@ instance QC.Arbitrary JobSpec where
 
 
 --
+-- | Job Single
+--
+
+newtype JobSingle
+    = JobSingle
+        { jsJob :: JobSpecId
+        }
+    deriving (Show,Eq)
+
+instance FromJSON JobSingle where
+     parseJSON (Object v) = 
+        JobSingle <$>
+            v .: "Job"
+     parseJSON _          = mzero
+
+instance ToJSON JobSingle where
+     toJSON js =
+        object 
+            [ "Job" .= jsJob js
+            ]
+
+instance QC.Arbitrary JobSingle where
+    arbitrary = JobSingle <$> QC.arbitrary
+
+
+--
+-- | Job List
+--
+
+data JobList
+    = JobList
+        { jlJobs          :: [JobSpecId]
+        , jlNextPageToken :: TextOrNull
+        }
+    deriving (Show,Eq)
+
+instance FromJSON JobList where
+     parseJSON (Object v) = 
+        JobList <$>
+            v .: "Jobs"                             <*>
+            v .: "NextPageToken"
+     parseJSON _          = mzero
+
+instance ToJSON JobList where
+     toJSON js@(JobList _ _) =
+        object 
+            [ "Jobs"          .= jlJobs          js
+            , "NextPageToken" .= jlNextPageToken js
+            ]
+
+instance QC.Arbitrary JobList where
+    arbitrary = JobList <$> QC.arbitrary <*> QC.arbitrary
+
+
+--
 -- | Job Specifications with JobId & Status
 --
 
@@ -138,25 +218,21 @@ data JobSpecId
     deriving (Show,Eq)
 
 instance FromJSON JobSpecId where
-     parseJSON (Object v0) = 
-        v0 .: "Job" >>= \v ->
-            JobSpecId <$>
-                v .: "Id"                               <*>
-                v .: "Input"                            <*>
-                v .: "Output"                           <*>
-                v .: "PipelineId"
+     parseJSON (Object v) = 
+        JobSpecId <$>
+            v .: "Id"                               <*>
+            v .: "Input"                            <*>
+            v .: "Output"                           <*>
+            v .: "PipelineId"
      parseJSON _          = mzero
 
 instance ToJSON JobSpecId where
      toJSON jsi@(JobSpecId _ _ _ _) =
         object
-            [ "Job" .=
-                object
-                    [ "Id"         .= jsiId         jsi
-                    , "Input"      .= jsiInput      jsi
-                    , "Output"     .= jsiOutput     jsi
-                    , "PipelineId" .= jsiPipelineId jsi
-                    ]
+            [ "Id"         .= jsiId         jsi
+            , "Input"      .= jsiInput      jsi
+            , "Output"     .= jsiOutput     jsi
+            , "PipelineId" .= jsiPipelineId jsi
             ]
 
 instance QC.Arbitrary JobSpecId where
@@ -519,7 +595,7 @@ instance QC.Arbitrary Rotate where
 data Status
     = STSSubmitted
     | STSProgressing
-    | STSCompleted
+    | STSComplete
     | STSCancelled
     | STSError
     deriving (Show,Eq,Ord,Bounded,Enum)
@@ -529,8 +605,8 @@ status_t sts =
     case sts of
       STSSubmitted   -> "Submitted"
       STSProgressing -> "Progressing"
-      STSCompleted   -> "Completed"
-      STSCancelled   -> "Cancelled"
+      STSComplete    -> "Complete"
+      STSCancelled   -> "Canceled"
       STSError       -> "Error"
 
 status_m :: Map.Map T.Text Status
@@ -578,7 +654,6 @@ instance QC.Arbitrary AutoBool where
 
 
 
-
 --
 -- | Text or Null
 --
@@ -623,6 +698,36 @@ instance ToJSON EtsServiceError where
 
 instance QC.Arbitrary EtsServiceError where
     arbitrary = ESE . T.pack <$> QC.arbitrary
+
+
+
+--
+-- | 'success'
+--
+
+newtype SUCCESS = SUCCESS { _SUCCESS :: Bool }
+    deriving (Show,Eq)
+
+instance FromJSON SUCCESS where
+    parseJSON (Object v) = SUCCESS <$> v .: "success"
+    parseJSON _          = mzero
+
+instance ToJSON SUCCESS where
+    toJSON = Bool . _SUCCESS
+
+instance QC.Arbitrary SUCCESS where
+    arbitrary = SUCCESS <$> QC.arbitrary
+
+
+
+--
+-- | 'true', 'false'
+--
+
+
+bool_t :: Bool -> T.Text
+bool_t True  = "true"
+bool_t False = "false"
 
 
 
