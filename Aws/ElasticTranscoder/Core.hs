@@ -24,7 +24,6 @@ module Aws.ElasticTranscoder.Core
 
 import           Aws.Core
 import           Aws.ElasticTranscoder.Json.Types
-import           Aws.ElasticTranscoder.Sign4
 import qualified Control.Exception              as C
 import           Control.Monad
 import           Control.Applicative
@@ -160,8 +159,8 @@ etsSignQuery EtsQuery{..} EtsConfiguration{..} SignatureData{..} =
   where
     -- authorization (and string to sign) fields
 
-    aut = authz        sg4    
-    sts = stringToSign sg4
+    aut = s4Authz        sg4    
+    sts = s4StringToSign sg4
 
     -- AWS Signature v4 parameters
      

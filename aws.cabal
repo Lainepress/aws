@@ -157,7 +157,7 @@ Test-Suite ets-json
 
 Test-Suite ets-sign4
   type:          detailed-0.9
-  test-module:   Aws.ElasticTranscoder.Sign4.Test
+  test-module:   Aws.Signature4Test
   Build-depends:
                        Cabal                >= 1.9.2,
                        attempt              >= 0.3.1.1 && < 0.5,
@@ -188,7 +188,6 @@ Test-Suite ets-sign4
 
   Other-modules:
                        Aws.Core
-                       Aws.ElasticTranscoder.Sign4
 
   GHC-Options: -Wall
 

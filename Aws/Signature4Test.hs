@@ -1,12 +1,11 @@
 {-# LANGUAGE BangPatterns        #-}
 
-module Aws.ElasticTranscoder.Sign4.Test
+module Aws.Signature4Test
     ( main
     , tests
     , testAll
     ) where
 
-import           Aws.ElasticTranscoder.Sign4
 import           Aws.Core
 import           System.Locale
 import           System.Environment
@@ -95,11 +94,11 @@ aws_test_credentials =
 
 test_creq, test_sts, test_authz :: FilePath -> IO Bool
 
-test_creq  = report "CREQ  "  spCreq  canonicalRequest
-test_sts   = report "STS   "  spSts   stringToSign
-test_authz = report "AUTHZ "  spAuthz authz
+test_creq  = report "CREQ  "  spCreq  s4CanonicalRequest
+test_sts   = report "STS   "  spSts   s4StringToSign
+test_authz = report "AUTHZ "  spAuthz s4Authz
 
--- test driver: takes a label, file path of anser file (as SuitePaths
+-- test driver: takes a label, file path of answer file (as SuitePaths
 -- extractor), the function to be tested and the file path of the input
 -- file and runs the test, returning True iff it passes.
 
