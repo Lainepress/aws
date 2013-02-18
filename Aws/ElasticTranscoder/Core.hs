@@ -186,7 +186,7 @@ etsSignQuery EtsQuery{..} EtsConfiguration{..} SignatureData{..} =
         ] ++ hdd
 
     hdd = 
-        [ (,) "Date" $ BC.pack $ iso8601 signatureTime
+        [ (,) "Date" $ fmtTime iso8601BasicUtcDate signatureTime
         ]
     
     -- URI path

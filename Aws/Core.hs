@@ -62,6 +62,7 @@ module Aws.Core
 , httpDate1
 , textHttpDate
 , iso8601UtcDate
+, iso8601BasicUtcDate
   -- * Transactions
 , Transaction
 , IteratedTransaction(..)
@@ -80,12 +81,11 @@ module Aws.Core
 , defaultPort
 , Method(..)
 , httpMethod
--- * Signature v4
+-- * Signature v4 generator
 , Sign4(..)
 , s4Authz
 , s4StringToSign
 , s4CanonicalRequest
-, iso8601
 )
 where
 
@@ -565,6 +565,9 @@ textHttpDate = T.pack . formatTime defaultTimeLocale httpDate1
 iso8601UtcDate :: String
 iso8601UtcDate = "%Y-%m-%dT%H:%M:%S%QZ"
 
+iso8601BasicUtcDate :: String
+iso8601BasicUtcDate = "%Y%m%dT%H%M%SZ"
+
 -- | Parse a two-digit hex number.
 readHex2 :: [Char] -> Maybe Word8
 readHex2 [c1,c2] = do n1 <- readHex1 c1
@@ -646,8 +649,12 @@ xmlCursorConsumer parse metadataRef (HTTP.Response { HTTP.responseBody = source 
            Success v   -> return v
 
 
+--
+-- Signature v4 Generator
+--
 
--- | Signature v4 generation parameters
+
+-- | Signature v4 generator parameters
 data Sign4
     = Sign4
         { s4Credentials :: Credentials
@@ -679,12 +686,19 @@ data Sign4
     deriving (Typeable)
 
 
+-- | Generate authorization header (s4Authz) and intermediate steps for
+-- diagnostics and validation (s4StringToSign,s4canonicalRequest) from the
+-- Sign4 parameters.
+
 s4Authz, s4StringToSign, s4CanonicalRequest :: Sign4 -> B.ByteString
 
 s4Authz            = s4Authz_            . complete_sign4
 s4StringToSign     = s4StringToSign_     . complete_sign4
 s4CanonicalRequest = s4CanonicalRequest_ . complete_sign4
 
+
+-- s4Authz_, s4Singn4_, s4StringToSign_ & s4CanonicalRequest all generate
+-- from Sign4 parameters that have been completed (see complete_sign4, below). 
 
 s4Authz_ :: Sign4 -> B.ByteString
 s4Authz_ s4@Sign4{..} =
@@ -714,7 +728,7 @@ s4StringToSign_ :: Sign4 -> B.ByteString
 s4StringToSign_ s4@Sign4{..} = 
     Bl.toByteString . mconcat . build_lines $
         [ Bl.copyByteString   algorithm
-        , Bl.copyByteString $ BC.pack $ iso8601 s4Date
+        , Bl.copyByteString $ fmtTime iso8601BasicUtcDate s4Date
         , Bl.copyByteString $ credential_scope s4
         , Bl.copyByteString $ s4_hash_hex $ s4CanonicalRequest_ s4
         ]
@@ -767,9 +781,6 @@ credential_scope Sign4{..} =
 
 algorithm :: B.ByteString
 algorithm = "AWS4-HMAC-SHA256"
-
-iso8601 :: UTCTime -> String
-iso8601 = formatTime defaultTimeLocale "%Y%m%dT%H%M%SZ"
 
 mere_date :: UTCTime -> String
 mere_date = formatTime defaultTimeLocale "%Y%m%d"
@@ -846,10 +857,9 @@ trim bs0 = B.take n bs
             dropWhile (isSpace . BC.index bs) [B.length bs-1,B.length bs-2..0]
   
     bs = BC.dropWhile isSpace bs0
-
         
 -- adapted from http-types (Network.HTTP.Types.URI), to display
--- rmpty query parameters with strings
+-- empty query parameters with strings
         
 render_query :: H.Query -> B.ByteString
 render_query = Bl.toByteString . render_query_b
