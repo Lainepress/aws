@@ -68,10 +68,15 @@ Library
                        Aws.ElasticTranscoder
                        Aws.ElasticTranscoder.Commands
                        Aws.ElasticTranscoder.Commands.CreateJob
+                       Aws.ElasticTranscoder.Commands.DeleteJob
+                       Aws.ElasticTranscoder.Commands.GetJob
+                       Aws.ElasticTranscoder.Commands.ListJobsByPipe
+                       Aws.ElasticTranscoder.Commands.ListJobsByStatus
                        Aws.ElasticTranscoder.Core
                        Aws.ElasticTranscoder.Json.Types
 
   Build-depends:
+                       QuickCheck           >= 2.5.1,
                        aeson                >= 0.6.1,
                        attempt              >= 0.3.1.1 && < 0.5,
                        base                 == 4.*,
@@ -93,7 +98,6 @@ Library
                        monad-control        >= 0.3,
                        mtl                  == 2.*,
                        old-locale           == 1.*,
-                       QuickCheck           >= 2.5.1,
                        regex-compat         >= 0.95,
                        resourcet            >= 0.3.3 && <0.5,
                        safe                 >= 0.3.3,
