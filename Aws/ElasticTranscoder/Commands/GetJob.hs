@@ -30,7 +30,7 @@ instance SignQuery GetJob where
 
     signQuery GetJob {..} = etsSignQuery EtsQuery
         { etsqMethod  = Get
-        , etsqRequest = "jobs/" `T.append` _JID gjJob
+        , etsqRequest = "jobs/" `T.append` _JobId gjJob
         , etsqQuery   = []
         , etsqBody    = Nothing
         }

@@ -1,24 +1,18 @@
 module Aws.ElasticTranscoder.Commands.UpdatePipelineStatus
     ( UpdatePipelineStatus(..)
-    , UpdatePipelineStatusResponse(..)
     ) where
 
 import           Aws.Core
 import           Aws.ElasticTranscoder.Core
 import           Control.Applicative
 import           Data.Aeson
+import           Data.Text                      as T
 
 
 data UpdatePipelineStatus
     = UpdatePipelineStatus
-        { upsStatus :: PipelineStatus
-        }
-    deriving (Show,Eq)
-
-data UpdatePipelineStatusResponse
-    = UpdatePipelineStatusResponse
-        { uprId      :: PipelineId
-        , uprStatus  :: PipelineStatus
+        { upsId     :: PipelineId
+        , upsStatus :: PipelineStatus
         }
     deriving (Show,Eq)
 
@@ -29,26 +23,25 @@ instance SignQuery UpdatePipelineStatus where
     signQuery UpdatePipelineStatus{..} = etsSignQuery 
         EtsQuery
             { etsqMethod  = Get
-            , etsqRequest = "pipelines"
+            , etsqRequest = "pipelines/" `T.append` _PipelineId upsId
+                                         `T.append` "/status"
             , etsqQuery   = []
             , etsqBody    = Just $ object [ "Status" .= upsStatus ]
             }
 
-instance ResponseConsumer UpdatePipelineStatus UpdatePipelineStatusResponse 
-                                                                        where
+instance ResponseConsumer UpdatePipelineStatus UpdatePipelineStatus where
 
-    type ResponseMetadata UpdatePipelineStatusResponse = EtsMetadata
+    type ResponseMetadata UpdatePipelineStatus = EtsMetadata
 
     responseConsumer _ mref = etsResponseConsumer mref $ \rsp ->
                                                     cnv <$> jsonConsumer rsp
           where
-            cnv (PAS a b) = UpdatePipelineStatusResponse a b
+            cnv (PipelineIdAndStatus a b) = UpdatePipelineStatus a b
 
-instance Transaction UpdatePipelineStatus UpdatePipelineStatusResponse
+instance Transaction UpdatePipelineStatus UpdatePipelineStatus
 
-instance AsMemoryResponse UpdatePipelineStatusResponse where
+instance AsMemoryResponse UpdatePipelineStatus where
 
-    type MemoryResponse UpdatePipelineStatusResponse = 
-                                                UpdatePipelineStatusResponse
+    type MemoryResponse UpdatePipelineStatus = UpdatePipelineStatus
 
     loadToMemory = return

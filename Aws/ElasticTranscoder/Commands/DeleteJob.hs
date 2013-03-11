@@ -25,7 +25,7 @@ instance SignQuery DeleteJob where
 
     signQuery DeleteJob {..} = etsSignQuery EtsQuery
         { etsqMethod  = Delete
-        , etsqRequest = "jobs/" `T.append` _JID djJob
+        , etsqRequest = "jobs/" `T.append` _JobId djJob
         , etsqQuery   = []
         , etsqBody    = Nothing
         }

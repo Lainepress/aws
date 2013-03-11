@@ -33,6 +33,9 @@ module Aws.ElasticTranscoder.Json.Types
     , pipelineStatusActive
     , pipelineStatusPaused
     , PipelineIdAndStatus(..)
+    , PipelineIdAndNotifications(..)
+    , RoleTest(..)
+    , MessagesSuccess(..)
     , AutoBool(..)
     , TextOrNull(..)
     , SUCCESS(..)
@@ -81,34 +84,34 @@ type IAMRole = T.Text
 -- | Job Identifiers
 --
 
-newtype JobId = JID { _JID :: T.Text }
+newtype JobId = JobId { _JobId :: T.Text }
     deriving (Show,IsString,Eq)
 
 instance FromJSON JobId where
-    parseJSON = withText "JobId" $ return . JID
+    parseJSON = withText "JobId" $ return . JobId
 
 instance ToJSON JobId where
-    toJSON = String . _JID
+    toJSON = String . _JobId
 
 instance QC.Arbitrary JobId where
-    arbitrary = JID . T.pack <$> QC.arbitrary
+    arbitrary = JobId . T.pack <$> QC.arbitrary
 
 
 --
 -- | Preset Identifiers
 --
 
-newtype PresetId = PRID { _PRID :: T.Text }
+newtype PresetId = PresetId { _PresetId :: T.Text }
     deriving (Show,IsString,Eq)
 
 instance FromJSON PresetId where
-    parseJSON = withText "PresetId" $ return . PRID
+    parseJSON = withText "PresetId" $ return . PresetId
 
 instance ToJSON PresetId where
-    toJSON = String . _PRID
+    toJSON = String . _PresetId
 
 instance QC.Arbitrary PresetId where
-    arbitrary = PRID . T.pack <$> QC.arbitrary
+    arbitrary = PresetId . T.pack <$> QC.arbitrary
 
 
 
@@ -116,17 +119,17 @@ instance QC.Arbitrary PresetId where
 -- | Page Tokens
 --
 
-newtype PageToken = PGTK { _PGTK :: T.Text }
+newtype PageToken = PageToken { _PageToken :: T.Text }
     deriving (Show,IsString,Eq)
 
 instance FromJSON PageToken where
-    parseJSON = withText "PageToken" $ return . PGTK
+    parseJSON = withText "PageToken" $ return . PageToken
 
 instance ToJSON PageToken where
-    toJSON = String . _PGTK
+    toJSON = String . _PageToken
 
 instance QC.Arbitrary PageToken where
-    arbitrary = PGTK . T.pack <$> QC.arbitrary
+    arbitrary = PageToken . T.pack <$> QC.arbitrary
 
 
 
@@ -639,34 +642,34 @@ instance QC.Arbitrary Status where
 -- | PipelineName
 --
 
-newtype PipelineName = PNM { _PNM :: T.Text }
+newtype PipelineName = PipelineName { _PipelineName :: T.Text }
     deriving (Show,IsString,Eq)
 
 instance FromJSON PipelineName where
-    parseJSON = withText "PipelineName" $ return . PNM
+    parseJSON = withText "PipelineName" $ return . PipelineName
 
 instance ToJSON PipelineName where
-    toJSON = String . _PNM
+    toJSON = String . _PipelineName
 
 instance QC.Arbitrary PipelineName where
-    arbitrary = PNM . T.pack <$> QC.arbitrary
+    arbitrary = PipelineName . T.pack <$> QC.arbitrary
 
 
 --
 -- | PipelineId
 --
 
-newtype PipelineId = PID { _PID :: T.Text }
+newtype PipelineId = PipelineId { _PipelineId :: T.Text }
     deriving (Show,IsString,Eq)
 
 instance FromJSON PipelineId where
-    parseJSON = withText "PipelineId" $ return . PID
+    parseJSON = withText "PipelineId" $ return . PipelineId
 
 instance ToJSON PipelineId where
-    toJSON = String . _PID
+    toJSON = String . _PipelineId
 
 instance QC.Arbitrary PipelineId where
-    arbitrary = PID . T.pack <$> QC.arbitrary
+    arbitrary = PipelineId . T.pack <$> QC.arbitrary
 
 
 --
@@ -674,7 +677,7 @@ instance QC.Arbitrary PipelineId where
 --
 
 data Pipeline
-    = PLN
+    = Pipeline
         { plnName          :: PipelineName
         , plnInputBucket   :: S3Object
         , plnOutputBucket  :: S3Object
@@ -685,7 +688,7 @@ data Pipeline
 
 instance FromJSON Pipeline where
     parseJSON (Object v) = 
-        PLN <$>
+        Pipeline <$>
             v .: "Name"                             <*>
             v .: "InputBucket"                      <*>
             v .: "OutputBucket"                     <*>
@@ -694,7 +697,7 @@ instance FromJSON Pipeline where
     parseJSON _          = mzero
 
 instance ToJSON Pipeline where
-    toJSON pln@(PLN _ _ _ _ _) =
+    toJSON pln@(Pipeline _ _ _ _ _) =
         object 
             [ "Name"          .= plnName          pln
             , "InputBucket"   .= plnInputBucket   pln
@@ -704,7 +707,7 @@ instance ToJSON Pipeline where
             ]
 
 instance QC.Arbitrary Pipeline where
-    arbitrary = PLN 
+    arbitrary = Pipeline 
                     <$>             QC.arbitrary 
                     <*> (T.pack <$> QC.arbitrary)
                     <*> (T.pack <$> QC.arbitrary)
@@ -769,7 +772,7 @@ instance QC.Arbitrary PipelineList where
 --
 
 data PipelineIdStatus
-    = PIS
+    = PipelineIdStatus
         { pisName          :: PipelineName
         , pisInputBucket   :: S3Object
         , pisOutputBucket  :: S3Object
@@ -782,7 +785,7 @@ data PipelineIdStatus
 
 instance FromJSON PipelineIdStatus where
     parseJSON (Object v) = 
-        PIS <$>
+        PipelineIdStatus <$>
             v .: "Name"                             <*>
             v .: "InputBucket"                      <*>
             v .: "OutputBucket"                     <*>
@@ -793,7 +796,7 @@ instance FromJSON PipelineIdStatus where
     parseJSON _          = mzero
 
 instance ToJSON PipelineIdStatus where
-    toJSON pis@(PIS _ _ _ _ _ _ _) =
+    toJSON pis@(PipelineIdStatus _ _ _ _ _ _ _) =
         object 
             [ "Name"          .= pisName          pis
             , "InputBucket"   .= pisInputBucket   pis
@@ -805,7 +808,7 @@ instance ToJSON PipelineIdStatus where
             ]
 
 instance QC.Arbitrary PipelineIdStatus where
-    arbitrary = PIS 
+    arbitrary = PipelineIdStatus 
                     <$>             QC.arbitrary 
                     <*> (T.pack <$> QC.arbitrary)
                     <*> (T.pack <$> QC.arbitrary)
@@ -820,7 +823,7 @@ instance QC.Arbitrary PipelineIdStatus where
 --
 
 data Notifications
-    = NTF
+    = Notifications
         { ntfCompleted    :: SNSTopic
         , ntfError        :: SNSTopic
         , ntfProgressing  :: SNSTopic
@@ -830,7 +833,7 @@ data Notifications
 
 instance FromJSON Notifications where
     parseJSON (Object v) = 
-        NTF <$>
+        Notifications <$>
             v .: "Completed"                        <*>
             v .: "Error"                            <*>
             v .: "Progressing"                      <*>
@@ -838,7 +841,7 @@ instance FromJSON Notifications where
     parseJSON _          = mzero
 
 instance ToJSON Notifications where
-    toJSON ntf@(NTF _ _ _ _) =
+    toJSON ntf@(Notifications _ _ _ _) =
         object 
             [ "Completed"       .= ntfCompleted        ntf
             , "Error"           .= ntfError            ntf
@@ -847,7 +850,8 @@ instance ToJSON Notifications where
             ]
 
 instance QC.Arbitrary Notifications where
-    arbitrary = NTF <$> (T.pack <$> QC.arbitrary) 
+    arbitrary = Notifications 
+                    <$> (T.pack <$> QC.arbitrary) 
                     <*> (T.pack <$> QC.arbitrary)
                     <*> (T.pack <$> QC.arbitrary)
                     <*> (T.pack <$> QC.arbitrary)
@@ -874,7 +878,7 @@ pipelineStatusPaused = "paused"
 --
 
 data PipelineIdAndStatus
-    = PAS
+    = PipelineIdAndStatus
         { pasId     :: PipelineId
         , pasStatus :: PipelineStatus
         }
@@ -882,21 +886,123 @@ data PipelineIdAndStatus
 
 instance FromJSON PipelineIdAndStatus where
     parseJSON (Object v) = 
-        PAS <$>
+        PipelineIdAndStatus <$>
             v .: "Id"                               <*>
             v .: "Status"
     parseJSON _          = mzero
 
 instance ToJSON PipelineIdAndStatus where
-    toJSON pas@(PAS _ _) =
+    toJSON pas@(PipelineIdAndStatus _ _) =
         object 
             [ "Id"              .= pasId     pas
             , "Status"          .= pasStatus pas
             ]
 
 instance QC.Arbitrary PipelineIdAndStatus where
-    arbitrary = PAS <$>             QC.arbitrary 
+    arbitrary = PipelineIdAndStatus 
+                    <$>             QC.arbitrary 
                     <*> (T.pack <$> QC.arbitrary)
+
+
+--
+-- | PipelineIdAndNotifications
+--
+
+data PipelineIdAndNotifications
+    = PipelineIdAndNotifications
+        { panId            :: PipelineId
+        , panNotifications :: Notifications
+        }
+    deriving (Show,Eq)
+
+instance FromJSON PipelineIdAndNotifications where
+    parseJSON (Object v) = 
+        PipelineIdAndNotifications <$>
+            v .: "Id"                               <*>
+            v .: "Notifications"
+    parseJSON _          = mzero
+
+instance ToJSON PipelineIdAndNotifications where
+    toJSON pas@(PipelineIdAndNotifications _ _) =
+        object 
+            [ "Id"              .= panId            pas
+            , "Notifications"   .= panNotifications pas
+            ]
+
+instance QC.Arbitrary PipelineIdAndNotifications where
+    arbitrary = PipelineIdAndNotifications 
+                    <$> QC.arbitrary 
+                    <*> QC.arbitrary
+
+
+--
+-- | RoleTest
+--
+
+data RoleTest
+    = RoleTest
+        { rtInputBucket  :: S3Object
+        , rtOutputBucket :: S3Object
+        , rtRole         :: IAMRole
+        , rtTopics       :: [SNSTopic]
+        }
+    deriving (Show,Eq)
+
+instance FromJSON RoleTest where
+    parseJSON (Object v) = 
+        RoleTest <$>
+            v .: "InputBucket"                      <*>
+            v .: "OutputBucket"                     <*>
+            v .: "Role"                             <*>
+            v .: "Topics"
+    parseJSON _          = mzero
+
+instance ToJSON RoleTest where
+    toJSON rt@(RoleTest _ _ _ _) =
+        object 
+            [ "InputBucket"  .= rtInputBucket  rt
+            , "OutputBucket" .= rtOutputBucket rt
+            , "Role"         .= rtRole         rt
+            , "Topics"       .= rtTopics       rt
+            ]
+
+instance QC.Arbitrary RoleTest where
+    arbitrary = RoleTest
+                    <$> (    T.pack <$> QC.arbitrary) 
+                    <*> (    T.pack <$> QC.arbitrary)
+                    <*> (    T.pack <$> QC.arbitrary)
+                    <*> (map T.pack <$> QC.arbitrary)
+
+
+--
+-- | MessagesSuccess
+--
+
+data MessagesSuccess
+    = MessagesSuccess
+        { msMessages :: [T.Text]
+        , msSuccess  :: Bool
+        }
+    deriving (Show,Eq)
+
+instance FromJSON MessagesSuccess where
+    parseJSON (Object v) = 
+        MessagesSuccess <$>
+            v .: "Messages"                         <*>
+            v .: "Success"
+    parseJSON _          = mzero
+
+instance ToJSON MessagesSuccess where
+    toJSON rt@(MessagesSuccess _ _) =
+        object 
+            [ "Messages" .= msMessages rt
+            , "Success"  .= msSuccess  rt
+            ]
+
+instance QC.Arbitrary MessagesSuccess where
+    arbitrary = MessagesSuccess
+                    <$> (map T.pack <$> QC.arbitrary) 
+                    <*>                 QC.arbitrary
 
 
 --

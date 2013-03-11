@@ -23,7 +23,7 @@ testAll :: IO ()
 testAll = mapM_ part simple_tests
       where
         part st = 
-             do putStr $ printf "%-25s: " $ nameST st
+             do putStr $ printf "%-35s: " $ nameST st
                 testST st False
 
 
@@ -41,37 +41,40 @@ testAllVerbose = mapM_ part simple_tests
 
 simple_tests :: [SimpleTest]
 simple_tests =
-        [ ae (mk_aet "JobId"                :: AETest JobId              )
-        , ae (mk_aet "PipelineId"           :: AETest PipelineId         )
-        , ae (mk_aet "PresetId"             :: AETest PresetId           )
-        , ae (mk_aet "PageToken"            :: AETest PageToken          )
-        , ae (mk_aet "JobSpec"              :: AETest JobSpec            )
-        , ae (mk_aet "JobSingle"            :: AETest JobSingle          )
-        , ae (mk_aet "JobList"              :: AETest JobList            )
-        , ae (mk_aet "JobSpecId"            :: AETest JobSpecId          )
-        , ae (mk_aet "JSInput"              :: AETest JSInput            )
-        , ae (mk_aet "JSOutput"             :: AETest JSOutput           )
-        , ae (mk_aet "JSOutputStatus"       :: AETest JSOutputStatus     )
-        , ae (mk_aet "FrameRate"            :: AETest FrameRate          )
-        , ae (mk_aet "Resolution"           :: AETest Resolution         )
-        , ae (mk_aet "AspectRatio"          :: AETest AspectRatio        )
-        , ae (mk_aet "Container"            :: AETest Container          )
-        , ae (mk_aet "Rotate"               :: AETest Rotate             )
-        , ae (mk_aet "Status"               :: AETest Status             )
-        , ae (mk_aet "PipelineName"         :: AETest PipelineName       )
-        , ae (mk_aet "PipelineId"           :: AETest PipelineId         )
-        , ae (mk_aet "Pipeline"             :: AETest Pipeline           )
-        , ae (mk_aet "PipelineSingle"       :: AETest PipelineSingle     )
-        , ae (mk_aet "PipelineList"         :: AETest PipelineList       )
-        , ae (mk_aet "PipelineIdStatus"     :: AETest PipelineIdStatus   )
-        , ae (mk_aet "Notifications"        :: AETest Notifications      )
-        , ae (mk_aet "PipelineIdAndStatus"  :: AETest PipelineIdAndStatus)
-        , ae (mk_aet "AutoBool"             :: AETest AutoBool           )
-        , ae (mk_aet "TextOrNull"           :: AETest TextOrNull         )
-        , ae (mk_aet "EtsServiceError"      :: AETest EtsServiceError    )
-        ]
-      where
-        ae (AET st) = st
+    [ ae (mk_aet "JobId"                        :: AETest JobId              )
+    , ae (mk_aet "PipelineId"                   :: AETest PipelineId         )
+    , ae (mk_aet "PresetId"                     :: AETest PresetId           )
+    , ae (mk_aet "PageToken"                    :: AETest PageToken          )
+    , ae (mk_aet "JobSpec"                      :: AETest JobSpec            )
+    , ae (mk_aet "JobSingle"                    :: AETest JobSingle          )
+    , ae (mk_aet "JobList"                      :: AETest JobList            )
+    , ae (mk_aet "JobSpecId"                    :: AETest JobSpecId          )
+    , ae (mk_aet "JSInput"                      :: AETest JSInput            )
+    , ae (mk_aet "JSOutput"                     :: AETest JSOutput           )
+    , ae (mk_aet "JSOutputStatus"               :: AETest JSOutputStatus     )
+    , ae (mk_aet "FrameRate"                    :: AETest FrameRate          )
+    , ae (mk_aet "Resolution"                   :: AETest Resolution         )
+    , ae (mk_aet "AspectRatio"                  :: AETest AspectRatio        )
+    , ae (mk_aet "Container"                    :: AETest Container          )
+    , ae (mk_aet "Rotate"                       :: AETest Rotate             )
+    , ae (mk_aet "Status"                       :: AETest Status             )
+    , ae (mk_aet "PipelineName"                 :: AETest PipelineName       )
+    , ae (mk_aet "PipelineId"                   :: AETest PipelineId         )
+    , ae (mk_aet "Pipeline"                     :: AETest Pipeline           )
+    , ae (mk_aet "PipelineSingle"               :: AETest PipelineSingle     )
+    , ae (mk_aet "PipelineList"                 :: AETest PipelineList       )
+    , ae (mk_aet "PipelineIdStatus"             :: AETest PipelineIdStatus   )
+    , ae (mk_aet "Notifications"                :: AETest Notifications      )
+    , ae (mk_aet "PipelineIdAndStatus"          :: AETest PipelineIdAndStatus)
+    , ae (mk_aet "PipelineIdAndNotifications"   :: AETest PipelineIdAndNotifications)
+    , ae (mk_aet "RoleTest"                     :: AETest RoleTest           )
+    , ae (mk_aet "MessagesSuccess"              :: AETest MessagesSuccess    )
+    , ae (mk_aet "AutoBool"                     :: AETest AutoBool           )
+    , ae (mk_aet "TextOrNull"                   :: AETest TextOrNull         )
+    , ae (mk_aet "EtsServiceError"              :: AETest EtsServiceError    )
+    ]
+  where
+    ae (AET st) = st
 
 
 -- Our simple QC tests and instances to insert into the Cabal framework.

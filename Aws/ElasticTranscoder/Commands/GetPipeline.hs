@@ -34,7 +34,7 @@ instance SignQuery GetPipeline where
     signQuery GetPipeline{..} = etsSignQuery 
         EtsQuery
             { etsqMethod  = Get
-            , etsqRequest = "pipeline/" `T.append` _PID gplPipeline
+            , etsqRequest = "pipeline/" `T.append` _PipelineId gplPipeline
             , etsqQuery   = []
             , etsqBody    = Nothing
             }
@@ -46,7 +46,7 @@ instance ResponseConsumer GetPipeline GetPipelineResponse where
     responseConsumer _ mref = etsResponseConsumer mref $ \rsp ->
                                                     cnv <$> jsonConsumer rsp
           where
-            cnv (PipelineSingle(PIS a b c d e f g)) = 
+            cnv (PipelineSingle(PipelineIdStatus a b c d e f g)) = 
                                             GetPipelineResponse a b c d e f g
 
 instance Transaction GetPipeline GetPipelineResponse

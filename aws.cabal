@@ -70,8 +70,15 @@ Library
                        Aws.ElasticTranscoder.Commands.CreateJob
                        Aws.ElasticTranscoder.Commands.DeleteJob
                        Aws.ElasticTranscoder.Commands.GetJob
-                       Aws.ElasticTranscoder.Commands.ListJobsByPipe
+                       Aws.ElasticTranscoder.Commands.ListJobsByPipeline
                        Aws.ElasticTranscoder.Commands.ListJobsByStatus
+                       Aws.ElasticTranscoder.Commands.CreatePipeline
+                       Aws.ElasticTranscoder.Commands.ListPipelines
+                       Aws.ElasticTranscoder.Commands.GetPipeline
+                       Aws.ElasticTranscoder.Commands.UpdatePipelineStatus
+                       Aws.ElasticTranscoder.Commands.UpdatePipelineNotifications
+                       Aws.ElasticTranscoder.Commands.DeletePipeline
+                       Aws.ElasticTranscoder.Commands.TestRole
                        Aws.ElasticTranscoder.Core
                        Aws.ElasticTranscoder.Json.Types
 

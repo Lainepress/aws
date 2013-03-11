@@ -41,7 +41,7 @@ instance SignQuery CreatePipeline where
             , etsqRequest = "pipeline"
             , etsqQuery   = []
             , etsqBody    = Just $ toJSON $ 
-                                PLN cplName 
+                                Pipeline cplName 
                                     cplInputBucket
                                     cplOutputBucket
                                     cplRole
@@ -55,7 +55,7 @@ instance ResponseConsumer CreatePipeline CreatePipelineResponse where
     responseConsumer _ mref = etsResponseConsumer mref $ \rsp ->
                                                     cnv <$> jsonConsumer rsp
           where
-            cnv (PipelineSingle(PIS a b c d e f g)) = 
+            cnv (PipelineSingle(PipelineIdStatus a b c d e f g)) = 
                                             CreatePipelineResponse a b c d e f g
 
 instance Transaction CreatePipeline CreatePipelineResponse

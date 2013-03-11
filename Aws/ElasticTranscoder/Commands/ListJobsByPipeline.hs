@@ -30,7 +30,7 @@ instance SignQuery ListJobsByPipeline where
 
     signQuery ListJobsByPipeline{..} = etsSignQuery EtsQuery
         { etsqMethod  = Get
-        , etsqRequest = "jobsByPipeline/" `T.append` _PLID ljpPipelineId
+        , etsqRequest = "jobsByPipeline/" `T.append` _PipelineId ljpPipelineId
         , etsqQuery   = [("Ascending",text_q $ bool_t ljpAscending)] ++
                         [("pageToken",text_q pgtk) | 
                                             TNText pgtk<-[ljpPageToken] ]
