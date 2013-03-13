@@ -41,7 +41,8 @@ instance SignQuery CreatePipeline where
             , etsqRequest = "pipeline"
             , etsqQuery   = []
             , etsqBody    = Just $ toJSON $ 
-                                Pipeline cplName 
+                                Pipeline
+                                    cplName 
                                     cplInputBucket
                                     cplOutputBucket
                                     cplRole

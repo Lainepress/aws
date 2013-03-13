@@ -35,6 +35,23 @@ module Aws.ElasticTranscoder.Json.Types
     , PipelineIdAndStatus(..)
     , PipelineIdAndNotifications(..)
     , RoleTest(..)
+    , PresetName(..)
+    , Preset(..)
+    , Audio(..)
+    , Video(..)
+    , Thumbnails(..)
+    , CodecOptions(..)
+    , AudioCodec(..)
+    , SampleRate(..)
+    , Channels(..)
+    , VideoCodec(..)
+    , ThumbnailFormat(..)
+    , Profile(..)
+    , Level(..)
+    , BitRate(..)
+    , KeyFrameRate(..)
+    , FixedGOP(..)
+    , Interval(..)
     , MessagesSuccess(..)
     , AutoBool(..)
     , TextOrNull(..)
@@ -974,6 +991,553 @@ instance QC.Arbitrary RoleTest where
                     <*> (map T.pack <$> QC.arbitrary)
 
 
+
+
+--
+-- | PresetName
+--
+
+newtype PresetName = PresetName { _PresetName :: T.Text }
+    deriving (Show,IsString,Eq)
+
+instance FromJSON PresetName where
+    parseJSON = withText "PresetName" $ return . PresetName
+
+instance ToJSON PresetName where
+    toJSON    = String . _PresetName
+
+instance QC.Arbitrary PresetName where
+    arbitrary = PresetName . T.pack <$> QC.arbitrary
+
+
+--
+-- | Preset
+--
+
+data Preset
+    = Preset
+        { prName        :: PresetName
+        , prDescription :: T.Text
+        , prContainer   :: Container
+        , prAudio       :: Audio
+        , prVideo       :: Video
+        , prThumbnails  :: Thumbnails
+        }
+    deriving (Show,Eq)
+
+instance FromJSON Preset where
+    parseJSON (Object v) = 
+        Preset <$>
+            v .: "Name"                             <*>
+            v .: "Description"                      <*>
+            v .: "Container"                        <*>
+            v .: "Audio"                            <*>
+            v .: "Video"                            <*>
+            v .: "Thumbnails"
+    parseJSON _          = mzero
+
+instance ToJSON Preset where
+    toJSON pr@(Preset _ _ _ _ _ _) =
+        object 
+            [ "Name"        .= prName        pr
+            , "Description" .= prDescription pr
+            , "Container"   .= prContainer   pr
+            , "Audio"       .= prAudio       pr
+            , "Video"       .= prVideo       pr
+            , "Thumbnails"  .= prThumbnails  pr
+            ]
+
+instance QC.Arbitrary Preset where
+    arbitrary = Preset 
+                    <$>             QC.arbitrary 
+                    <*> (T.pack <$> QC.arbitrary)
+                    <*>             QC.arbitrary
+                    <*>             QC.arbitrary
+                    <*>             QC.arbitrary
+                    <*>             QC.arbitrary
+
+
+--
+-- | Audio
+--
+
+data Audio
+    = Audio
+        { auCodec      :: AudioCodec
+        , auSampleRate :: SampleRate
+        , auBitRate    :: BitRate
+        , auChannels   :: Channels
+        }
+    deriving (Show,Eq)
+
+instance FromJSON Audio where
+    parseJSON (Object v) = 
+        Audio <$>
+            v .: "Codec"                            <*>
+            v .: "SampleRate"                       <*>
+            v .: "BitRate"                          <*>
+            v .: "Channels"
+    parseJSON _          = mzero
+
+instance ToJSON Audio where
+    toJSON au@(Audio _ _ _ _) =
+        object 
+            [ "Codec"      .= auCodec      au
+            , "SampleRate" .= auSampleRate au
+            , "BitRate"    .= auBitRate    au
+            , "Channels"   .= auChannels   au
+            ]
+
+instance QC.Arbitrary Audio where
+    arbitrary = Audio
+                    <$> QC.arbitrary 
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+
+
+--
+-- | Video
+--
+
+data Video
+    = Video
+        { vdCodec            :: VideoCodec 
+        , vdCodecOptions     :: CodecOptions
+        , vdKeyFrameRateDist :: KeyFrameRate
+        , vdFixedGOP         :: FixedGOP
+        , vdBitRate          :: BitRate
+        , vdFrameRate        :: FrameRate
+        , vdResolution       :: Resolution 
+        , vdAspectRatio      :: AspectRatio
+        }
+    deriving (Show,Eq)
+
+instance FromJSON Video where
+    parseJSON (Object v) = 
+        Video <$>
+            v .: "Codec"                            <*>
+            v .: "CodecOptions"                     <*>
+            v .: "KeyFrameRateDist"                 <*>
+            v .: "FixedGOP"                         <*>
+            v .: "BitRate"                          <*>
+            v .: "FrameRate"                        <*>
+            v .: "Resolution"                       <*>
+            v .: "AspectRatio"
+    parseJSON _          = mzero
+
+instance ToJSON Video where
+    toJSON vd@(Video _ _ _ _ _ _ _ _) =
+        object 
+            [ "Codec"            .= vdCodec            vd
+            , "CodecOptions"     .= vdCodecOptions     vd
+            , "KeyFrameRateDist" .= vdKeyFrameRateDist vd
+            , "FixedGOP"         .= vdFixedGOP         vd
+            , "BitRate"          .= vdBitRate          vd
+            , "FrameRate"        .= vdFrameRate        vd
+            , "Resolution"       .= vdResolution       vd
+            , "AspectRatio"      .= vdAspectRatio      vd
+            ]
+
+instance QC.Arbitrary Video where
+    arbitrary = Video
+                    <$> QC.arbitrary 
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+
+
+--
+-- | Thumbnails
+--
+
+data Thumbnails
+    = Thumbnails
+        { thFormat      :: ThumbnailFormat
+        , thInterval    :: Interval
+        , thResolution  :: Resolution
+        , thAspectRatio :: AspectRatio
+        }
+    deriving (Show,Eq)
+
+instance FromJSON Thumbnails where
+    parseJSON (Object v) = 
+        Thumbnails <$>
+            v .: "thFormat"                           <*>
+            v .: "thInterval"                         <*>
+            v .: "thResolution"                       <*>
+            v .: "thAspectRatio"
+    parseJSON _          = mzero
+
+instance ToJSON Thumbnails where
+    toJSON th@(Thumbnails _ _ _ _) =
+        object 
+            [ "thFormat"      .= thFormat      th
+            , "thInterval"    .= thInterval    th
+            , "thResolution"  .= thResolution  th
+            , "thAspectRatio" .= thAspectRatio th
+            ]
+
+instance QC.Arbitrary Thumbnails where
+    arbitrary = Thumbnails
+                    <$> QC.arbitrary 
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+
+
+--
+-- | CodecOptions
+--
+
+data CodecOptions
+    = CodecOptions
+        { coProfile            :: Profile
+        , coLevel              :: Level
+        , coMaxReferenceFrames :: MaxReferenceFrames
+        }
+    deriving (Show,Eq)
+
+instance FromJSON CodecOptions where
+    parseJSON (Object v) = 
+        CodecOptions <$>
+            v .: "Profile"                            <*>
+            v .: "Level"                              <*>
+            v .: "MaxReferenceFrames"
+    parseJSON _          = mzero
+
+instance ToJSON CodecOptions where
+    toJSON th@(CodecOptions _ _ _) =
+        object 
+            [ "Profile"            .= coProfile            th
+            , "Level"              .= coLevel              th
+            , "MaxReferenceFrames" .= coMaxReferenceFrames th
+            ]
+
+instance QC.Arbitrary CodecOptions where
+    arbitrary = CodecOptions
+                    <$> QC.arbitrary 
+                    <*> QC.arbitrary
+                    <*> QC.arbitrary
+
+
+--
+-- | AudioCodec
+--
+
+data AudioCodec
+    = AC_AAC
+    deriving (Show,Eq,Ord,Bounded,Enum)
+
+acodec_t :: AudioCodec -> T.Text
+acodec_t ac =
+        case ac of
+          AC_AAC -> "AAC"
+
+acodec_m :: Map.Map T.Text AudioCodec
+acodec_m = text_map acodec_t
+
+instance FromJSON AudioCodec where
+    parseJSON = json_str_map_p acodec_m
+
+instance ToJSON AudioCodec where
+    toJSON = String . acodec_t
+
+instance QC.Arbitrary AudioCodec where
+    arbitrary = QC.elements [minBound..maxBound]
+
+
+--
+-- | SampleRate
+--
+
+data SampleRate
+    = SRauto
+    | SR22050
+    | SR32050
+    | SR44100
+    | SR48000
+    | SR96000
+    deriving (Show,Eq,Ord,Bounded,Enum)
+
+srate_t :: SampleRate -> T.Text
+srate_t sr =
+    case sr of
+      SRauto  -> "auto"
+      SR22050 -> "22050"
+      SR32050 -> "32050"
+      SR44100 -> "44100"
+      SR48000 -> "48000"
+      SR96000 -> "96000"
+
+srate_m :: Map.Map T.Text SampleRate
+srate_m = text_map srate_t
+
+instance FromJSON SampleRate where
+    parseJSON = json_str_map_p srate_m
+
+instance ToJSON SampleRate where
+    toJSON = String . srate_t
+
+instance QC.Arbitrary SampleRate where
+    arbitrary = QC.elements [minBound..maxBound]
+
+
+--
+-- | Channels
+--
+
+data Channels
+    = Chs_auto
+    | Chs_0
+    | Chs_1
+    | Chs_2
+    deriving (Show,Eq,Ord,Bounded,Enum)
+
+channels_t :: Channels -> T.Text
+channels_t ac =
+    case ac of
+      Chs_auto -> "auto"
+      Chs_0 -> "0"
+      Chs_1 -> "1"
+      Chs_2 -> "2"
+
+channels_m :: Map.Map T.Text Channels
+channels_m = text_map channels_t
+
+instance FromJSON Channels where
+    parseJSON = json_str_map_p channels_m
+
+instance ToJSON Channels where
+    toJSON = String . channels_t
+
+instance QC.Arbitrary Channels where
+    arbitrary = QC.elements [minBound..maxBound]
+
+
+--
+-- | VideoCodec
+--
+
+data VideoCodec
+    = VC_H_264
+    deriving (Show,Eq,Ord,Bounded,Enum)
+
+vcodec_t :: VideoCodec -> T.Text
+vcodec_t ac =
+        case ac of
+          VC_H_264 -> "H.264"
+
+vcodec_m :: Map.Map T.Text VideoCodec
+vcodec_m = text_map vcodec_t
+
+instance FromJSON VideoCodec where
+    parseJSON = json_str_map_p vcodec_m
+
+instance ToJSON VideoCodec where
+    toJSON = String . vcodec_t
+
+instance QC.Arbitrary VideoCodec where
+    arbitrary = QC.elements [minBound..maxBound]
+
+
+--
+-- | ThumbnailFormat
+--
+
+data ThumbnailFormat
+    = TF_png
+    deriving (Show,Eq,Ord,Bounded,Enum)
+
+thumb_t :: ThumbnailFormat -> T.Text
+thumb_t ac =
+        case ac of
+          TF_png -> "png"
+
+thumb_m :: Map.Map T.Text ThumbnailFormat
+thumb_m = text_map thumb_t
+
+instance FromJSON ThumbnailFormat where
+    parseJSON = json_str_map_p thumb_m
+
+instance ToJSON ThumbnailFormat where
+    toJSON = String . thumb_t
+
+instance QC.Arbitrary ThumbnailFormat where
+    arbitrary = QC.elements [minBound..maxBound]
+
+
+--
+-- | Profile
+--
+
+data Profile
+    = Pr_baseline
+    | Pr_main
+    | Pr_high
+    deriving (Show,Eq,Ord,Bounded,Enum)
+
+profile_t :: Profile -> T.Text
+profile_t ac =
+        case ac of
+          Pr_baseline -> "baseline"
+          Pr_main     -> "main"
+          Pr_high     -> "high"
+
+profile_m :: Map.Map T.Text Profile
+profile_m = text_map profile_t
+
+instance FromJSON Profile where
+    parseJSON = json_str_map_p profile_m
+
+instance ToJSON Profile where
+    toJSON = String . profile_t
+
+instance QC.Arbitrary Profile where
+    arbitrary = QC.elements [minBound..maxBound]
+
+
+--
+-- | Level
+--
+
+data Level
+    = Lv_1
+    | Lv_1b
+    | Lv_1_1
+    | Lv_1_2
+    | Lv_1_3
+    | Lv_2
+    | Lv_2_1
+    | Lv_2_2
+    | Lv_3
+    | Lv_3_1
+    | Lv_3_2
+    | Lv_4
+    | Lv_4_1
+    deriving (Show,Eq,Ord,Bounded,Enum)
+
+level_t :: Level -> T.Text
+level_t ac =
+    case ac of
+      Lv_1   -> "1"
+      Lv_1b  -> "1b"
+      Lv_1_1 -> "1.1"
+      Lv_1_2 -> "1.2"
+      Lv_1_3 -> "1.3"
+      Lv_2   -> "2"
+      Lv_2_1 -> "2.1"
+      Lv_2_2 -> "2.2"
+      Lv_3   -> "3"
+      Lv_3_1 -> "3.1"
+      Lv_3_2 -> "3.2"
+      Lv_4   -> "4"
+      Lv_4_1 -> "4.1"
+
+level_m :: Map.Map T.Text Level
+level_m = text_map level_t
+
+instance FromJSON Level where
+    parseJSON = json_str_map_p level_m
+
+instance ToJSON Level where
+    toJSON = String . level_t
+
+instance QC.Arbitrary Level where
+    arbitrary = QC.elements [minBound..maxBound]
+
+
+--
+-- | BitRate
+--
+
+newtype BitRate = KbPerSec { _KbPerSec :: Int }
+    deriving (Show,Eq,Ord,Bounded,Enum)
+
+instance FromJSON BitRate where
+    parseJSON = withText "BitRate" $ \t -> KbPerSec <$> read_p t
+
+instance ToJSON BitRate where
+    toJSON = String . T.pack . show . _KbPerSec
+
+instance QC.Arbitrary BitRate where
+    arbitrary = KbPerSec <$> QC.arbitrary
+
+
+--
+-- | KeyFrameRate
+--
+
+newtype KeyFrameRate = KeyFrameRate { _KeyFrameRate :: Int }
+    deriving (Show,Eq)
+
+instance FromJSON KeyFrameRate where
+    parseJSON = withText "KeyFrameRate" $ \t -> KeyFrameRate <$> read_p t
+
+instance ToJSON KeyFrameRate where
+    toJSON = String . T.pack . show . _KeyFrameRate
+
+instance QC.Arbitrary KeyFrameRate where
+    arbitrary = KeyFrameRate <$> QC.arbitrary
+
+
+--
+-- | FixedGOP
+--
+
+newtype FixedGOP = FixedGOP { _FixedGOP :: Bool }
+    deriving (Show,Eq)
+
+instance FromJSON FixedGOP where
+    parseJSON = withText "FixedGOP" $ \t -> FixedGOP <$> read_p t
+
+instance ToJSON FixedGOP where
+    toJSON = String . T.pack . show . _FixedGOP
+
+instance QC.Arbitrary FixedGOP where
+    arbitrary = FixedGOP <$> QC.arbitrary
+
+
+--
+-- | Interval
+--
+
+newtype Interval = Interval { _Interval :: Int }
+    deriving (Show,Eq)
+
+instance FromJSON Interval where
+    parseJSON = withText "Interval" $ \t -> Interval <$> read_p t
+
+instance ToJSON Interval where
+    toJSON = String . T.pack . show . _Interval
+
+instance QC.Arbitrary Interval where
+    arbitrary = Interval <$> QC.arbitrary
+
+
+--
+-- | MaxReferenceFrames
+--
+
+newtype MaxReferenceFrames = MaxReferenceFrames
+                                            { _MaxReferenceFrames :: Int }
+    deriving (Show,Eq)
+
+instance FromJSON MaxReferenceFrames where
+    parseJSON = withText "MaxReferenceFrames" 
+                                        $ \t -> MaxReferenceFrames <$> read_p t
+
+instance ToJSON MaxReferenceFrames where
+    toJSON = String . T.pack . show . _MaxReferenceFrames
+
+instance QC.Arbitrary MaxReferenceFrames where
+    arbitrary = MaxReferenceFrames <$> QC.arbitrary
+
+
 --
 -- | MessagesSuccess
 --
@@ -1131,6 +1695,8 @@ json_string_p _  _                           = mzero
 text_map :: (Ord a,Bounded a,Enum a) => (a->T.Text) -> Map.Map T.Text a
 text_map f = Map.fromList [ (f x,x) | x<-[minBound..maxBound] ]
 
+read_p :: Read a => T.Text -> Parser a
+read_p txt = maybe mzero return $ readMay $ T.unpack txt
 
 
 ------------------------------------------------------------------------------
