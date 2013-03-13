@@ -37,6 +37,9 @@ module Aws.ElasticTranscoder.Json.Types
     , RoleTest(..)
     , PresetName(..)
     , Preset(..)
+    , PresetSingle(..)
+    , PresetList(..)
+    , PresetResponse(..)
     , Audio(..)
     , Video(..)
     , Thumbnails(..)
@@ -48,6 +51,7 @@ module Aws.ElasticTranscoder.Json.Types
     , ThumbnailFormat(..)
     , Profile(..)
     , Level(..)
+    , PresetType(..)
     , BitRate(..)
     , KeyFrameRate(..)
     , FixedGOP(..)
@@ -1058,6 +1062,117 @@ instance QC.Arbitrary Preset where
 
 
 --
+-- | PresetSingle
+--
+
+newtype PresetSingle
+    = PresetSingle
+        { psPreset :: PresetResponse
+        }
+    deriving (Show,Eq)
+
+instance FromJSON PresetSingle where
+     parseJSON (Object v) = 
+        PresetSingle <$>
+            v .: "Preset"
+     parseJSON _          = mzero
+
+instance ToJSON PresetSingle where
+     toJSON js =
+        object 
+            [ "Preset" .= psPreset js
+            ]
+
+instance QC.Arbitrary PresetSingle where
+    arbitrary = PresetSingle <$> QC.arbitrary
+
+
+--
+-- | PresetList
+--
+
+data PresetList
+    = PresetList
+        { plPresets     :: [PresetResponse]
+        }
+    deriving (Show,Eq)
+
+instance FromJSON PresetList where
+     parseJSON (Object v) = 
+        PresetList <$>
+            v .: "Presets"
+     parseJSON _          = mzero
+
+instance ToJSON PresetList where
+     toJSON ps@(PresetList _) =
+        object 
+            [ "Presets"     .= plPresets     ps
+            ]
+
+instance QC.Arbitrary PresetList where
+    arbitrary = PresetList <$> QC.arbitrary
+
+
+--
+-- | PresetResponse
+--
+
+data PresetResponse
+    = PresetResponse
+        { prrName        :: PresetName
+        , prrDescription :: T.Text
+        , prrContainer   :: Container
+        , prrAudio       :: Audio
+        , prrVideo       :: Video
+        , prrThumbnails  :: Thumbnails
+        , prrId          :: PresetId
+        , prrType        :: PresetType
+        , prrWarning     :: T.Text
+        }
+    deriving (Show,Eq)
+
+instance FromJSON PresetResponse where
+    parseJSON (Object v) = 
+        PresetResponse <$>
+            v .: "Name"                             <*>
+            v .: "Description"                      <*>
+            v .: "Container"                        <*>
+            v .: "Audio"                            <*>
+            v .: "Video"                            <*>
+            v .: "Thumbnails"                       <*>
+            v .: "Id"                               <*>
+            v .: "Type"                             <*>
+            v .: "Warning"
+    parseJSON _          = mzero
+
+instance ToJSON PresetResponse where
+    toJSON prr@(PresetResponse _ _ _ _ _ _ _ _ _) =
+        object 
+            [ "Name"        .= prrName        prr
+            , "Description" .= prrDescription prr
+            , "Container"   .= prrContainer   prr
+            , "Audio"       .= prrAudio       prr
+            , "Video"       .= prrVideo       prr
+            , "Thumbnails"  .= prrThumbnails  prr
+            , "Id"          .= prrId          prr
+            , "Type"        .= prrType        prr
+            , "Warning"     .= prrWarning     prr
+            ]
+
+instance QC.Arbitrary PresetResponse where
+    arbitrary = PresetResponse 
+                    <$>             QC.arbitrary 
+                    <*> (T.pack <$> QC.arbitrary)
+                    <*>             QC.arbitrary
+                    <*>             QC.arbitrary
+                    <*>             QC.arbitrary
+                    <*>             QC.arbitrary
+                    <*>             QC.arbitrary
+                    <*>             QC.arbitrary
+                    <*> (T.pack <$> QC.arbitrary)
+
+
+--
 -- | Audio
 --
 
@@ -1448,6 +1563,34 @@ instance ToJSON Level where
     toJSON = String . level_t
 
 instance QC.Arbitrary Level where
+    arbitrary = QC.elements [minBound..maxBound]
+
+
+--
+-- | PresetType
+--
+
+data PresetType
+    = PTcustom
+    | PTsystem
+    deriving (Show,Eq,Ord,Bounded,Enum)
+
+prtype_t :: PresetType -> T.Text
+prtype_t pt =
+        case pt of
+          PTcustom -> "custom"
+          PTsystem -> "system"
+
+prtype_m :: Map.Map T.Text PresetType
+prtype_m = text_map prtype_t
+
+instance FromJSON PresetType where
+    parseJSON = json_str_map_p prtype_m
+
+instance ToJSON PresetType where
+    toJSON = String . prtype_t
+
+instance QC.Arbitrary PresetType where
     arbitrary = QC.elements [minBound..maxBound]
 
 

@@ -11,6 +11,10 @@ module Aws.ElasticTranscoder.Commands
     , module Aws.ElasticTranscoder.Commands.UpdatePipelineNotifications
     , module Aws.ElasticTranscoder.Commands.DeletePipeline
     , module Aws.ElasticTranscoder.Commands.TestRole
+    , module Aws.ElasticTranscoder.Commands.CreatePreset
+    , module Aws.ElasticTranscoder.Commands.ListPresets
+    , module Aws.ElasticTranscoder.Commands.GetPreset
+    , module Aws.ElasticTranscoder.Commands.DeletePreset
     ) where
 
 import           Aws.ElasticTranscoder.Commands.CreateJob
@@ -25,3 +29,7 @@ import           Aws.ElasticTranscoder.Commands.UpdatePipelineStatus
 import           Aws.ElasticTranscoder.Commands.UpdatePipelineNotifications
 import           Aws.ElasticTranscoder.Commands.DeletePipeline
 import           Aws.ElasticTranscoder.Commands.TestRole
+import           Aws.ElasticTranscoder.Commands.CreatePreset
+import           Aws.ElasticTranscoder.Commands.ListPresets
+import           Aws.ElasticTranscoder.Commands.GetPreset
+import           Aws.ElasticTranscoder.Commands.DeletePreset

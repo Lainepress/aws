@@ -388,7 +388,7 @@ queryToHttpRequest SignedQuery{..}
                                             Nothing -> HTTP.RequestBodyBuilder 0 mempty
                                             Just x  -> x
       , HTTP.decompress = HTTP.alwaysDecompress
-#if MIN_VERSION_http_conduit(1, 9, 0)
+#if 0 /* MIN_VERSION_http_conduit(1, 9, 0) */
       , HTTP.checkStatus = \_ _ _ -> Nothing
 #else
       , HTTP.checkStatus = \_ _ -> Nothing
